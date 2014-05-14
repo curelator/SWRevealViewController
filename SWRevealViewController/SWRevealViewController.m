@@ -592,18 +592,21 @@ static NSString * const SWSegueRightIdentifier = @"sw_right";
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    // we could have simply not implemented this, but we choose to call super to make explicit that we
-    // want the default behavior.
-    return [super supportedInterfaceOrientations];
+    // In storyboard mode, this will be called before self.frontViewController is set.
+    if(![self.frontViewController respondsToSelector:@selector(supportedInterfaceOrientations)])
+        return UIInterfaceOrientationMaskAll;
+    return [self.frontViewController supportedInterfaceOrientations];
 }
 
-// Support for earlier than iOS 6.0
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < 60000
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+// Support for earlier than iOS 6.0
 {
-    return YES;
+    // In storyboard mode, this will be called before self.frontViewController is set.
+    if(![self.frontViewController respondsToSelector:@selector(shouldAutorotateToInterfaceOrientation:)])
+        return UIInterfaceOrientationMaskAll;
+    return [self.frontViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
-#endif
 
 
 #pragma mark - Public methods and property accessors
